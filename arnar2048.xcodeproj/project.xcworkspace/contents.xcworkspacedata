@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:../arnar2048/BoardView.h">
+   </FileRef>
+   <FileRef
+      location = "group:../arnar2048/BoardView.m">
+   </FileRef>
+   <FileRef
+      location = "self:arnar2048.xcodeproj">
+   </FileRef>
+</Workspace>
