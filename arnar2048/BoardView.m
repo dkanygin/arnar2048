@@ -49,6 +49,7 @@
 }
 
 -(void)refreshBoard{
+    NSLog(@"refreshing board");
     CGFloat width = self.frame.size.width/4;
     CGFloat height = width;
     CGFloat xOffset = 0;
@@ -124,6 +125,8 @@
 }
 
 -(void)reverseRow:(int)row{
+    NSLog(@"about to reverse row %d", row);
+    NSLog(@"about to reverse row [%d, %d, %d, %d]", _board[row][0], _board[row][1], _board[row][2], _board[row][3]);
     int temp = _board[row][0];
     _board[row][0] = _board[row][3];
     _board[row][3] = temp;
@@ -131,9 +134,13 @@
     temp = _board[row][1];
     _board[row][1] = _board[row][2];
     _board[row][2] = temp;
+    NSLog(@"reversed to [%d, %d, %d, %d]", _board[row][0], _board[row][1], _board[row][2], _board[row][3]);
+
 }
 
 -(void)reverseColumn:(int)col{
+    NSLog(@"about to reverse col %d", col);
+    NSLog(@"about to reverse col to to [%d, %d, %d, %d]", _board[0][col], _board[1][col], _board[2][col], _board[3][col]);
     int temp = _board[0][col];
     _board[0][col] = _board[3][col];
     _board[3][col] = temp;
@@ -141,9 +148,17 @@
     temp = _board[1][col];
     _board[1][col] = _board[2][col];
     _board[2][col] = temp;
+    NSLog(@"reversed col to to [%d, %d, %d, %d]", _board[0][col], _board[1][col], _board[2][col], _board[3][col]);
 }
 
 - (BOOL)merge:(int)row doMerge:(BOOL)mergeFlag{
+    if (mergeFlag) {
+        NSLog(@"about to merge %d row", row);
+    }else{
+        NSLog(@"checking if row %d can be merged", row);
+    }
+    NSLog(@"in merge row: [%d, %d, %d, %d]", _board[row][0], _board[row][1], _board[row][2], _board[row][3]);
+
     BOOL merged = NO;
     for (int col=BOARD_SIZE-1; col>0; col--) {
         if (_board[row][col] > 0 && _board[row][col-1] == _board[row][col]){
@@ -154,11 +169,25 @@
             merged = YES;
         }
     }
-    [self shiftRow:row];
+    if (mergeFlag){
+        NSLog(@"merged row %d: [%d, %d, %d, %d]", row, _board[row][0], _board[row][1], _board[row][2], _board[row][3]);
+        [self shiftRow:row];
+    }else{
+        if(merged){
+            NSLog(@"can merge row %d: [%d, %d, %d, %d]", row, _board[row][0], _board[row][1], _board[row][2], _board[row][3]);
+        }else{
+            NSLog(@"can not be merged row %d: [%d, %d, %d, %d]", row, _board[row][0], _board[row][1], _board[row][2], _board[row][3]);
+        }
+    }
     return merged;
 }
 
 - (BOOL)mergeColumn:(int)col doMerge:(BOOL)mergeFlag{
+    if (mergeFlag) {
+        NSLog(@"about to merge %d col", col);
+    }else{
+        NSLog(@"checking if col %d can be merged", col);
+    }
     BOOL merged = NO;
     for (int row=BOARD_SIZE-1; row>0; row--) {
         if (_board[row][col]>0 && _board[row-1][col] == _board[row][col]){
@@ -169,11 +198,21 @@
             merged = YES;
         }
     }
-    [self shiftColumn:col];
+    if (mergeFlag){
+        NSLog(@"merged col %d: [%d, %d, %d, %d]", col, _board[0][col], _board[1][col], _board[2][col], _board[3][col]);
+        [self shiftColumn:col];
+    }else{
+        if(merged){
+            NSLog(@"can merge row %d: [%d, %d, %d, %d]", col, _board[0][col], _board[1][col], _board[2][col], _board[3][col]);
+        }else{
+            NSLog(@"can not be merged row %d: [%d, %d, %d, %d]", col, _board[0][col], _board[1][col], _board[2][col], _board[3][col]);
+        }
+    }
     return merged;
 }
 
 - (BOOL) shiftRow:(int)row{
+    NSLog(@"about to shift row %d: [%d, %d, %d, %d]", row, _board[row][0], _board[row][1], _board[row][2], _board[row][3]);
     BOOL changed = NO;
     int temp_row [] = {0,0,0,0};
     int index = BOARD_SIZE -1;
@@ -189,6 +228,7 @@
     //check if anything changed
     for (int col= BOARD_SIZE-1; col >= 0; col--) {
         if (_board[row][col] != temp_row[col]) {
+            NSLog(@"row %d changed after shift", row);
             changed = YES;
         }
     }
@@ -197,6 +237,7 @@
         for (int i=BOARD_SIZE-1; i>=0; i--) {
             _board[row][i] = temp_row[i];
         }
+        NSLog(@"shifted row %d: [%d, %d, %d, %d]", row, _board[row][0], _board[row][1], _board[row][2], _board[row][3]);
     }
     
     return changed;
@@ -204,6 +245,8 @@
 
 //can reuse shiftrow here but would have to pass in column converted to row
 - (BOOL) shiftColumn:(int)col{
+    NSLog(@"about to shift col %d: [%d, %d, %d, %d]", col, _board[0][col], _board[1][col], _board[2][col], _board[3][col]);
+    
     BOOL changed = NO;
     int temp_row [] = {0,0,0,0};
     int index = BOARD_SIZE -1;
@@ -219,6 +262,7 @@
     for (int row= BOARD_SIZE-1; row >= 0; row--) {
         if (_board[row][col] != temp_row[row]) {
             changed = YES;
+            NSLog(@"col %d changed after shift", col);
         }
     }
     
@@ -226,6 +270,8 @@
         for (int i=BOARD_SIZE-1; i>=0; i--) {
             _board[i][col] = temp_row[i];
         }
+        NSLog(@"shifted col %d: [%d, %d, %d, %d]", col, _board[0][col], _board[1][col], _board[2][col], _board[3][col]);
+        
     }
     
     return changed;
@@ -236,12 +282,12 @@
     BOOL moves = NO;
     
     //check if rows can be merged
-    BOOL row_merged = [self merge:0 doMerge:YES] || [self merge:1 doMerge:YES] ||
-                 [self merge:2 doMerge:YES] || [self merge:3 doMerge:YES];
+    BOOL row_merged = [self merge:0 doMerge:NO] || [self merge:1 doMerge:NO] ||
+                 [self merge:2 doMerge:NO] || [self merge:3 doMerge:NO];
     
     //check if columns can be merged
-    BOOL col_merged = [self mergeColumn:0 doMerge:YES] || [self mergeColumn:1 doMerge:NO] ||
-                 [self mergeColumn:2 doMerge:YES] || [self mergeColumn:3 doMerge:YES];
+    BOOL col_merged = [self mergeColumn:0 doMerge:NO] || [self mergeColumn:1 doMerge:NO] ||
+                 [self mergeColumn:2 doMerge:NO] || [self mergeColumn:3 doMerge:NO];
     
     moves = row_merged || col_merged;
     return moves;
@@ -259,6 +305,7 @@
 
 -(void) addTile:(int)tileValue{
     
+    NSLog(@"about to add a tile");
     // add two random tiles with each move
     NSMutableArray *freeTiles = [self getFreeTiles];
     if ([freeTiles count]>0) {
@@ -267,10 +314,12 @@
         int row = (int)tile_coods.x;
         int col = (int)tile_coods.y;
         _board[row][col] = tileValue;
+        NSLog(@"added tile to row=%d, col=%d", row, col);
     }
 }
 
 -(void) moveDown{
+    NSLog(@"MOVE DOWN");
     BOOL col0_shifted = [self shiftColumn:0];
     BOOL col1_shifted = [self shiftColumn:1];
     BOOL col2_shifted = [self shiftColumn:2];
@@ -289,6 +338,7 @@
 }
 
 -(void) moveUp{
+    NSLog(@"MOVE UP");
     [self reverseColumn:0];
     BOOL col0_shifted = [self shiftColumn:0];
     BOOL col0_merged = [self mergeColumn:0 doMerge:YES];
@@ -318,6 +368,7 @@
 }
 
 -(void) moveRight{
+    NSLog(@"MOVE RIGHT");
     BOOL row0_shifted = [self shiftRow:0];
     BOOL row0_merged = [self merge:0 doMerge:YES];
     BOOL row1_shifted = [self shiftRow:1];
@@ -335,6 +386,7 @@
 
 
 -(void) moveLeft{
+    NSLog(@"MOVE LEFT");
     [self reverseRow:0];
     BOOL row0_shifted = [self shiftRow:0];
     BOOL row0_merged = [self merge:0 doMerge:YES];
