@@ -14,6 +14,7 @@
 @implementation BoardView
 {
     int _board[BOARD_SIZE][BOARD_SIZE];
+    UILabel *_board_views[BOARD_SIZE][BOARD_SIZE];
 }
 
 
@@ -26,13 +27,26 @@
 */
 
 -(void) initBoard{
-    for (int row = 0; row < BOARD_SIZE; row++){
-        for (int col = 0; col < BOARD_SIZE; col++){
+    int row, col;
+    for (row = 0; row < BOARD_SIZE; row++){
+        for (col = 0; col < BOARD_SIZE; col++){
             _board[row][col] = 0;
         }
     }
     [self addTile:2];
     [self addTile:4];
+    
+    
+    CGFloat width = self.frame.size.width/4;
+    CGFloat height = width;
+    CGFloat xOffset = 0;
+    CGFloat yOffset = 50;
+    for (row = 0; row < BOARD_SIZE; row++){
+        for (col = 0; col < BOARD_SIZE; col++){
+            _board_views[row][col] = [[UILabel alloc] initWithFrame:CGRectMake(xOffset+(col*width), yOffset+(row*height), width, height)];
+        }
+    }
+    
 }
 
 -(NSMutableArray *)getFreeTiles{
@@ -50,15 +64,13 @@
 
 -(void)refreshBoard{
     NSLog(@"refreshing board");
-    CGFloat width = self.frame.size.width/4;
-    CGFloat height = width;
-    CGFloat xOffset = 0;
-    CGFloat yOffset = 50;
     for (int row = 0; row < BOARD_SIZE; row++){
         for (int col = 0; col < BOARD_SIZE; col++){
-            UILabel *tile = [[UILabel alloc] initWithFrame:CGRectMake(xOffset+(col*width), yOffset+(row*height), width, height)];
+            UILabel *tile = _board_views[row][col];
             if (_board[row][col]!= 0) {
                 tile.text = [NSString stringWithFormat:@"%d", _board[row][col]];
+            }else{
+                tile.text = @"";
             }
             switch (_board[row][col]) {
                 case 0:
@@ -314,6 +326,7 @@
         int row = (int)tile_coods.x;
         int col = (int)tile_coods.y;
         _board[row][col] = tileValue;
+        
         NSLog(@"added tile to row=%d, col=%d", row, col);
     }
 }
